@@ -38,6 +38,7 @@ const unsigned char tftp_unknown_error_packet[] PROGMEM = "\0\5" "\0\0" "Error";
 const unsigned char tftp_invalid_image_packet[] PROGMEM = "\0\5" "\0\0" "Invalid image file";
 
 uint8_t tftpFlashing;
+uint8_t tftpInitError;
 
 #ifndef TFTP_RANDOM_PORT
 static uint16_t tftpTransferPort;
@@ -53,13 +54,26 @@ static void sockInit(uint16_t port)
 		tracenum(port);
 	)
 
+	uint8_t err = 1;
+	uint8_t errors = 0;
+
 	spiWriteReg(REG_S3_CR, S3_W_CB, CR_CLOSE);
-    while(spiReadReg(REG_S3_CR, S3_R_CB)) {
+    while(err) {
 		//wait for command to complete
+		err = spiReadReg(REG_S3_CR, S3_R_CB);
+		errors++;
+
+		// Well, after so many errors, it will not happen probably.
+		if (errors > 254) {
+			DBG_TFTP(tracePGMlnTftp(mDebugTftp_OPERR);)
+
+			tftpInitError = TRUE;
+			return;
+		}
 	}
 
 	do {
-        // Write interrupt
+		// Write interrupt
 		spiWriteReg(REG_S3_IR, S3_W_CB, 0xFF);
 		// Write mode
 		spiWriteReg(REG_S3_MR, S3_W_CB, MR_UDP);
@@ -465,7 +479,9 @@ static void sendResponse(uint16_t response)
  */
 void tftpInit(void)
 {
-	// Open socket
+	tftpInitError = FALSE;
+
+	// Try to Open socket.
 	sockInit(TFTP_PORT);
 
 #if defined(RANDOM_TFTP_DATA_PORT)

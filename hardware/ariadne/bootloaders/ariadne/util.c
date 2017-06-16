@@ -15,7 +15,6 @@
 #include "util.h"
 #include "tftp.h"
 #include "spi.h"
-#include "tftp.h"
 #include "debug.h"
 #include "debug_util.h"
 
@@ -80,9 +79,10 @@ uint8_t socketResetRequried(void)
 	}
 
 	//	2. tftp is active too long without calling "resetTick" (otherwise we whoudn't be here).
-	//	3. TODO: add ethernet initialize error, why not try again.. after some time passed.
+	//	3. ethernet initialize error, why not try again.. (after some time).
 	if (tick > TIMEOUT) {
 		if (tftpFlashing == TRUE) return(1);
+		if (tftpInitError == TRUE) return(1);
 	}
 
 	return(0);

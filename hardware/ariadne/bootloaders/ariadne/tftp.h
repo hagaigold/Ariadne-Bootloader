@@ -52,10 +52,12 @@
 
 #define TFTP_PACKET_DELAY	400
 
-/**
- * Tftp status flag, it is set to TRUE if flashing from
- * tftp is currently active */
+// Tftp status flag, it is set to TRUE if flashing from
+//  tftp is currently active 
 extern uint8_t tftpFlashing;
+
+// Set to true when some unexpected error with initialize ethernet, e.g. no ethernet shield mount on device :(
+extern uint8_t tftpInitError;
 
 void tftpInit(void);
 uint8_t tftpPoll(void);
