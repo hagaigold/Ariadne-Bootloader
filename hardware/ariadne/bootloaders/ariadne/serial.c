@@ -45,6 +45,18 @@ void serialInit(void)
 
 }
 
+//*
+//* send single byte to USART, wait until transmission is completed
+//*   this is the same method used in arduino-stk500boot.c
+//*	  ( different logic then the putch below)
+//*
+void sendchar(uint8_t c)
+{
+	UART_DATA_REG = c;											// prepare transmission
+	while (!(UART_STATUS_REG & (1 << UART_TRANSMIT_COMPLETE)));	// wait until byte sent
+	UART_STATUS_REG |= (1 << UART_TRANSMIT_COMPLETE);			// delete TXCflag
+}
+
 
 void putch(uint8_t c)
 {

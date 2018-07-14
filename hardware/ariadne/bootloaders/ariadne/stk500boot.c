@@ -495,33 +495,33 @@ uint8_t processStk500boot(void)
 		/*
 		 * Now send answer message back
 		 */
-		putch(MESSAGE_START);
+		sendchar(MESSAGE_START);
 		checksum	=	MESSAGE_START ^ 0;
 
-		putch(seqNum);
+		sendchar(seqNum);
 		checksum	^=	seqNum;
 
 		c			=	((msgLength >> 8) & 0xFF);
-		putch(c);
+		sendchar(c);
 		checksum	^=	c;
 
 		c			=	msgLength & 0x00FF;
-		putch(c);
+		sendchar(c);
 		checksum ^= c;
 
-		putch(TOKEN);
+		sendchar(TOKEN);
 		checksum ^= TOKEN;
 
 		p	=	msgBuffer;
 
 		while(msgLength) {
 			c	=	*p++;
-			putch(c);
+			sendchar(c);
 			checksum ^= c;
 			msgLength--;
 		}
 
-		putch(checksum);
+		sendchar(checksum);
 		seqNum++;
 
 	}

@@ -142,6 +142,7 @@ uint8_t serialFlashing;
  */
 void serialInit(void);
 
+void sendchar(uint8_t c);
 void putch(uint8_t c);
 void puthex(uint8_t c);
 
